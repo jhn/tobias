@@ -1,14 +1,23 @@
 # domain
 
-A Clojure library designed to ... well, that part is up to you.
+Domain holds the business logic of Tobias.
 
-## Usage
+## What it does
 
-FIXME
+1. Receives images with some environment information from the UI
+2. Sends images to the CV service to get some demographics
+3. Forwards demographic information to advertisers
+4. Advertisers bid, someone wins
+5. Sends winning bid image back to UI for display
 
-## License
+## Running it
 
-Copyright © 2015 FIXME
+### Dependencies
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+* [Leiningen](https://github.com/technomancy/leiningen)
+* [Docker](http://docs.docker.com/engine/installation/)
+
+### Steps
+
+Create standard uberjar, build the Docker image, run it like the wind.
+
