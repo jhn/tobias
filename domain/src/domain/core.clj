@@ -3,8 +3,11 @@
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
-            [ring.util.response :refer [response]])
+            [ring.util.response :refer [response]]
+            [clojure.java.io :as io])
   (:gen-class))
+
+(def ads->features (atom {}))
 
 (def features
   "A map that holds features and their possible values"
@@ -88,6 +91,9 @@
 
 (defroutes app-routes
   (GET "/" [] "OMG HI!")
+  (POST "/auction/new"
+    {{{tempfile :tempfile filename :filename} :img} :params :as params}
+      (io/copy tempfile (io/file filename)))
   (route/not-found "Not Found"))
 
 (def app
