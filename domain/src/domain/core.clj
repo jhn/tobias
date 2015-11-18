@@ -81,7 +81,7 @@
           current-ad->features))
 
 (defn get-winning-ad [current-features resulting-features]
-  (let [results (get-scored-ads ads->features-example result-features-example)]
+  (let [results (get-scored-ads current-features resulting-features)]
     (->> results
          (sort-by (comp :score second))
          last)))
