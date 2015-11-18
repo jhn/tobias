@@ -80,6 +80,12 @@
           ; the map we want to reduce over
           current-ad->features))
 
+(defn get-winning-ad [current-features resulting-features]
+  (let [results (get-scored-ads ads->features-example result-features-example)]
+    (->> results
+         (sort-by (comp :score second))
+         last)))
+
 (defroutes app-routes
   (GET "/" [] "OMG HI!")
   (route/not-found "Not Found"))
