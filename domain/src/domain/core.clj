@@ -44,8 +44,44 @@
    :advertiser2 #{:ad3}
    :advertiser3 #{:ad4}})
 
+(defn get-scored-ads [current-ad->features resulting-features]
+  "Given a map of resulting features, compute the score for the features preferences set to each ad"
+  ; we'll reduce over our current ads-features map assigning a score to it
+  ; updated-ads-feature is the resulting map. ad is the ad id, feature-preferences is the feature-map
+  (reduce (fn [updated-ads->feature [ad feature-preferences]]
+            ; we only care about feature-map entries whose keys appear in the resulting map. select these.
+            (let [matching-features (select-keys
+                                      feature-preferences
+                                      (keys resulting-features))
+                  ; now comes the juicy part.
+                  ; we'll reduce each feature-map to a single score for that map.
+                  matching-features-score (reduce-kv
+                                            ; init score is 0, (k v) is the current map entry
+                                            (fn [init k v]
+                                              ; check if the value of this feature and the
+                                              ; value of the resulting feature match up
+                                              (if (= v (resulting-features k))
+                                                ; if so, increment the score
+                                                (inc init)
+                                                ; or just pass it along
+                                                init))
+                                            ; score starts at zero
+                                            0
+                                            ; the entry we're reducing over
+                                            matching-features)]
+              ; finally, put ads->features back together
+              (assoc updated-ads->feature
+                ; by associating the ad
+                ad
+                ; with the an extra entry that contains the score for that feature
+                (assoc feature-preferences :score matching-features-score))))
+          ; a new map to put everything in
+          {}
+          ; the map we want to reduce over
+          current-ad->features))
+
 (defroutes app-routes
-  (GET "/status" [] "OMG HI!")
+  (GET "/" [] "OMG HI!")
   (route/not-found "Not Found"))
 
 (def app
