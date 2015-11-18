@@ -48,24 +48,22 @@
    :advertiser2 #{:ad3}
    :advertiser3 #{:ad4}})
 
+(defn score-feature-set [feature-set result-set]
+  "Returns an ad's feature set scored"
+  ; do a set intersection between the result set and this ad's feature set to get matches
+  (let [matching-features (->> (clojure.set/intersection result-set feature-set)
+                               (into {}))]
+    (assoc (into {} feature-set)
+      :matches matching-features
+      :score (count matching-features))))
+
 (defn get-scored-ads [current-ad->features resulting-features]
   "Given a map of resulting features, computes the score for each ad feature"
-  ; convert the resulting feature map into a set for easy operation
-  (let [result-set (set resulting-features)]
-    ; updated-ad-features is the resulting map. ad is the ad id, feature-preferences is the feature-map
-    (reduce (fn [updated-ad-features [ad feature-preferences]]
-              ; do a set intersection between the result set and this ad's feature set to get matches
-              (let [matching-features (->> (clojure.set/intersection result-set (set feature-preferences))
-                                           (into {}))] ; back into a map for friendly display
-                ; update ads->features with matches and scores
-                (assoc updated-ad-features
-                  ad
-                  (assoc feature-preferences
-                    :matches matching-features
-                    :score (count matching-features)))))
-            ; a new map to put everything in
+  (let [result-set (set resulting-features)] ; convert to set for easy operation
+    (reduce (fn [scored-ad-features [ad ad-features]]
+              (let [scored-features (score-feature-set (set ad-features) result-set)]
+                (assoc scored-ad-features ad scored-features)))
             {}
-            ; the map we want to reduce over
             current-ad->features)))
 
 (defn get-winning-ad [current-features resulting-features]
