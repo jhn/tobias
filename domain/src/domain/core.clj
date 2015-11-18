@@ -4,7 +4,8 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.util.response :refer [response]]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clj-http.client :as http])
   (:gen-class))
 
 (def ads->features (atom {}))
@@ -88,6 +89,10 @@
     (->> results
          (sort-by (comp :score second))
          last)))
+
+(defn query-cv [file-name file-path]
+  (http/post "http://example.org" {:multipart [{:name file-name
+                                                :content (clojure.java.io/file file-path)}]}))
 
 (defroutes app-routes
   (GET "/" [] "OMG HI!")
