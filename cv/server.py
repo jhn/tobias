@@ -28,12 +28,19 @@ app.url_map.converters['regex'] = RegexConverter
 @app.route("/recognize", methods = ['GET', 'POST'])
 def route():
     data = {}
+ #   for k,v in request.form.iteritems():
+ #       print "here"
+ #       if k == "file":
+ #           print k
     #A POST request is incoming
     if request.method == 'POST':
+        #file = request.form['file']
+        #imagefile = request.files.get('file', '')
+
         json_resp = requests.post( 'http://api.sightcorp.com/api/detect/',
               data   = { 'app_key'   : keys[0][:-1],
                          'client_id' : keys[1] },
-              files  = { 'img'       : request.get_data() } )
+              files  = { 'img'       : request.files.get('file', '') } ) #request.get_data()
         print "Response : ", json_resp.text
 
         return json_resp.text
