@@ -2,6 +2,7 @@
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.util.response :refer [response]]
             [clojure.java.io :as io]
@@ -87,4 +88,5 @@
   (-> app-routes
       (wrap-defaults api-defaults)
       (wrap-json-body {:keywords? true})
-      (wrap-json-response)))
+      (wrap-json-response)
+      (wrap-multipart-params)))
