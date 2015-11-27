@@ -1,26 +1,28 @@
 (ns domain.cv
   (:require [clj-http.client :as http]))
 
-(defn handle-file-sightcorp [tempfile creds]
-  (let [r (http/post "http://api.sightcorp.com/api/detect/"
-                     {:multipart [{:name "img" :content tempfile}
-                                  {:name "app_key" :content (creds :app_key)}
-                                  {:name "client_id" :content (creds :client_id)}]})
-        body (:body r)]
-    (response body)))
+(def microsoft-creds {:key "oof"})
 
-(defn handle-file-microsoft [tempfile creds]
-  (let [r (http/post "https://api.projectoxford.ai/face/v0/detections?analyzesFaceLandmarks=false&analyzesAge=true&analyzesGender=true&analyzesHeadPose=false"
-                     {:headers {"Content-Type" "application/octet-stream"
-                                "Ocp-Apim-Subscription-Key" (creds :key)}
-                      :body tempfile})
-        body (:body r)]
-    (response body)))
+(def face-plus-creds {:api_key "oof"
+                      :api_secret "rab"})
 
-(defn handle-file-faceplus [tempfile creds]
-  (let [r (http/post "http://apius.faceplusplus.com/detection/detect"
-                     {:multipart [{:name "img" :content tempfile}
+(def sightcorp-creds {:app_key "oof"
+                      :client_id "rab"})
+
+(defn post-sightcorp [tempfile creds]
+  (http/post "http://api.sightcorp.com/api/detect/"
+             {:multipart [{:name "img" :content tempfile}
+                          {:name "app_key" :content (creds :app_key)}
+                          {:name "client_id" :content (creds :client_id)}]}))
+
+(defn post-microsoft [tempfile creds]
+  (http/post "https://api.projectoxford.ai/face/v0/detections?analyzesFaceLandmarks=false&analyzesAge=true&analyzesGender=true&analyzesHeadPose=false"
+             {:headers {"Content-Type" "application/octet-stream"
+                        "Ocp-Apim-Subscription-Key" (creds :key)}
+              :body tempfile}))
+
+(defn post-faceplus [tempfile creds]
+  (http/post "http://apius.faceplusplus.com/detection/detect"
+             {:multipart [{:name "img" :content tempfile}
                                   {:name "api_key" :content (creds :api_key)}
-                                  {:name "api_secret" :content (creds :api_secret)}]})
-        body (:body r)]
-    (response body)))
+                                  {:name "api_secret" :content (creds :api_secret)}]}))
