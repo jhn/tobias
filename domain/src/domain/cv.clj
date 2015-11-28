@@ -18,7 +18,11 @@
                           {:name "client_id" :content (creds :client_id)}]}))
 
 (defn post-microsoft [tempfile creds]
-  (http/post "https://api.projectoxford.ai/face/v0/detections?analyzesFaceLandmarks=false&analyzesAge=true&analyzesGender=true&analyzesHeadPose=false"
+  (http/post (str "https://api.projectoxford.ai/face/v0/detections"
+                  "?analyzesFaceLandmarks=false"
+                  "&analyzesAge=true"
+                  "&analyzesGender=true"
+                  "&analyzesHeadPose=false")
              {:headers {"Content-Type" "application/octet-stream"
                         "Ocp-Apim-Subscription-Key" (creds :key)}
               :body tempfile}))
