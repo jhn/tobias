@@ -8,7 +8,8 @@
                  [ring/ring-defaults "0.1.5"]
                  [ring/ring-json "0.4.0"]
                  [compojure "1.4.0"]
-                 [clj-http "2.0.0"]]
+                 [clj-http "2.0.0"]
+                 [org.clojure/core.async "0.2.374"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler domain.core/app
          :nrepl {:start? true

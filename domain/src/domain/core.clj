@@ -5,7 +5,7 @@
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.util.response :refer [response]]
-            [clj-http.client :as http])
+            [domain.cv :refer [get-features]])
   (:gen-class))
 
 (def ads->features (atom {}))
@@ -75,7 +75,7 @@
 (defroutes app-routes
   (GET "/" [] "OMG HI!")
   (POST "/auction/new"
-        {{{tempfile :tempfile} :file} :params} (handle-file-microsoft tempfile microsoft-creds))
+        {{{image :tempfile} :file} :params} (response (get-features image)))
   (route/not-found "Not Found"))
 
 (def app
