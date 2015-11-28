@@ -1,4 +1,5 @@
-(ns domain.util)
+(ns domain.util
+  (:require [clojure.edn :as edn]))
 
 ; from http://aan.io/timing-clojure-macros/
 (defmacro timed [expr]
@@ -12,3 +13,6 @@
                  (:name (meta res#))
                  ": " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
        return#)))
+
+(defn load-config [filename]
+  (edn/read-string (slurp filename)))

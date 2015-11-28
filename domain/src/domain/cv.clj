@@ -1,15 +1,15 @@
 (ns domain.cv
   (:require [clj-http.client :as http]
             [clojure.core.async :refer [>! go chan alts!! thread >!!]]
-            [domain.util :refer [timed]]))
+            [domain.util :refer [timed load-config]]))
 
-(def microsoft-creds {:key "oof"})
+(def config (load-config (clojure.java.io/resource "config.edn")))
 
-(def face-plus-creds {:api_key "oof"
-                      :api_secret "rab"})
+(def microsoft-creds (:microsoft config))
 
-(def sightcorp-creds {:app_key "oof"
-                      :client_id "rab"})
+(def faceplus-creds (:faceplus config))
+
+(def sightcorp-creds (:sightcorp config))
 
 (defn post-sightcorp [tempfile creds]
   (http/post "http://api.sightcorp.com/api/detect/"
@@ -47,7 +47,7 @@
         microsoft-chan (chan)
         faceplus-chan  (chan)]
     (post-cv microsoft-chan post-microsoft image microsoft-creds)
-    (post-cv faceplus-chan post-faceplus  image face-plus-creds)
+    (post-cv faceplus-chan  post-faceplus  image faceplus-creds)
     (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
     (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
       (prn (condp = channel
