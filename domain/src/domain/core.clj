@@ -5,7 +5,8 @@
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.util.response :refer [response]]
-            [domain.cv :refer [get-features]])
+            [domain.cv :refer [get-features]]
+            [domain.util :refer [timed]])
   (:gen-class))
 
 (def ads->features (atom {}))
@@ -75,7 +76,7 @@
 (defroutes app-routes
   (GET "/" [] "OMG HI!")
   (POST "/auction/new"
-        {{{image :tempfile} :file} :params} (response (get-features image)))
+        {{{image :tempfile} :file} :params} (response (timed (get-features image))))
   (route/not-found "Not Found"))
 
 (def app

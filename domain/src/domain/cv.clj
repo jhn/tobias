@@ -43,17 +43,16 @@
       (>!! c (:body res)))))          ; put the resulting body in the chan
 
 (defn get-features [image]
-  (timed (let [sightcorp-chan (chan)
-               microsoft-chan (chan)
-               faceplus-chan  (chan)]
-           (post-cv microsoft-chan post-microsoft image microsoft-creds)
-           (post-cv faceplus-chan post-faceplus  image face-plus-creds)
-           (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
-           (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
-             (prn (condp = channel
-                    sightcorp-chan :sightcorp
-                    microsoft-chan :microsoft
-                    faceplus-chan  :faceplus
-                    :dunno))
-             result))))
-
+  (let [sightcorp-chan (chan)
+        microsoft-chan (chan)
+        faceplus-chan  (chan)]
+    (post-cv microsoft-chan post-microsoft image microsoft-creds)
+    (post-cv faceplus-chan post-faceplus  image face-plus-creds)
+    (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
+    (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
+      (prn (condp = channel
+             sightcorp-chan :sightcorp
+             microsoft-chan :microsoft
+             faceplus-chan  :faceplus
+             :dunno))
+      result)))
