@@ -1,6 +1,7 @@
 (ns domain.cv
   (:require [clj-http.client :as http]
-            [clojure.core.async :refer [>! go chan alts!! thread >!!]]))
+            [clojure.core.async :refer [>! go chan alts!! thread >!!]]
+            [domain.util :refer [timed]]))
 
 (def microsoft-creds {:key "oof"})
 
@@ -38,16 +39,17 @@
       (>!! c (:body res)))))          ; put the resulting body in the chan
 
 (defn get-features [image]
-  (let [sightcorp-chan (chan)
-        microsoft-chan (chan)
-        faceplus-chan  (chan)]
-    (post-cv microsoft-chan post-microsoft image microsoft-creds)
-    (post-cv faceplus-chan post-faceplus  image face-plus-creds)
-    (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
-    (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
-      (prn (condp = channel
-             sightcorp-chan :sightcorp
-             microsoft-chan :microsoft
-             faceplus-chan  :faceplus
-             :dunno))
-      result)))
+  (timed (let [sightcorp-chan (chan)
+               microsoft-chan (chan)
+               faceplus-chan  (chan)]
+           (post-cv microsoft-chan post-microsoft image microsoft-creds)
+           (post-cv faceplus-chan post-faceplus  image face-plus-creds)
+           (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
+           (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
+             (prn (condp = channel
+                    sightcorp-chan :sightcorp
+                    microsoft-chan :microsoft
+                    faceplus-chan  :faceplus
+                    :dunno))
+             result))))
+
