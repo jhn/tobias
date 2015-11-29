@@ -1,6 +1,7 @@
 (ns domain.cv
   (:require [clj-http.client :as http]
-            [clojure.core.async :refer [>! go chan alts!! thread >!!]]
+            [clojure.data.json :as json]
+            [clojure.core.async :refer [chan alts!! thread >!!]]
             [domain.util :refer [timed load-config]]))
 
 (def config (load-config (clojure.java.io/resource "config.edn")))
@@ -36,11 +37,11 @@
 (defn post-cv
   [c                                  ; out channel
    f                                  ; a function that POSTs to a cv provider
-   image                              ; file on which to run cv
+   image                              ; image on which to run cv
    creds]                             ; creds for the cv api
   (thread                             ; gets its own thread because we're blocking
     (let [res (f image creds)]        ; call f to POST
-      (>!! c (:body res)))))          ; put the resulting body in the chan
+      (>!! c (json/read-str (:body res) :key-fn keyword))))) ; parse result as json, put it in c
 
 (defn normalize-sightcorp [result]
   (map (fn [x]
@@ -65,9 +66,8 @@
     (post-cv faceplus-chan  post-faceplus  image faceplus-creds)
     (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
     (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
-      (prn (condp = channel
-             sightcorp-chan :sightcorp
-             microsoft-chan :microsoft
-             faceplus-chan  :faceplus
-             :dunno))
-      result)))
+      (condp = channel
+             sightcorp-chan :>> (fn [_] (prn :sightcorp) (normalize-sightcorp result))
+             microsoft-chan :>> (fn [_] (prn :microsoft) (normalize-microsoft result))
+             faceplus-chan  :>> (fn [_] (prn :faceplus)  (normalize-faceplus result))
+             :dunno))))
