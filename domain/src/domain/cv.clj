@@ -42,6 +42,21 @@
     (let [res (f image creds)]        ; call f to POST
       (>!! c (:body res)))))          ; put the resulting body in the chan
 
+(defn normalize-sightcorp [result]
+  (map (fn [x]
+         {:age    (get-in x [:age :value])
+          :gender (get-in x [:gender :value])})
+       (:persons result)))
+
+(defn normalize-microsoft [result]
+  (map :attributes result))
+
+(defn normalize-faceplus [result]
+  (map (fn [x]
+         {:age    (get-in x [:attribute :age :value])
+          :gender (get-in x [:attribute :gender :value])})
+       (:face result)))
+
 (defn get-features [image]
   (let [sightcorp-chan (chan)
         microsoft-chan (chan)
