@@ -21,23 +21,27 @@
 
 (def ads->features-example
   "An example of a map that holds each ad and its preferred features"
-  {:ad1 {:ethnicity :asian
-         :weather   :rainy
-         :location  :prime
-         :age       :mid
-         :gender    :male
-         :url       "http://example.com/1.jpg"}
-   :ad2 {:age       :mid
-         :gender    :female
-         :location  :average
-         :url       "http://example.com/2.jpg"}
-   :ad3 {:weather   :sunny
-         :gender    :male
-         :url       "http://example.com/3.jpg"}
-   :ad4 {:gender    :male
-         :age       :old
-         :location  :prime
-         :url       "http://example.com/4.jpg"}})
+  [{:id :one
+    :ethnicity :asian
+    :weather   :rainy
+    :location  :prime
+    :age       :mid
+    :gender    :male
+    :url       "http://example.com/1.jpg"}
+   {:id        :two
+    :age       :mid
+    :gender    :female
+    :location  :average
+    :url       "http://example.com/2.jpg"}
+   {:id        :three
+    :weather   :sunny
+    :gender    :male
+    :url       "http://example.com/3.jpg"}
+   {:id        :four
+    :gender    :male
+    :age       :old
+    :location  :prime
+    :url       "http://example.com/4.jpg"}])
 
 (def result-features-example
   "An example of a resulting map obtained from Tobiaz' UI and CV"
@@ -65,17 +69,15 @@
 (defn get-scored-ads [current-ad->features resulting-features]
   "Given a map of resulting features, computes the score for each ad feature"
   (let [result-set (set resulting-features)] ; convert to set for easy operation
-    (reduce (fn [scored-ad-features [ad ad-features]]
-              (let [scored-features (score-feature-set (set ad-features) result-set)]
-                (assoc scored-ad-features ad scored-features)))
-            {}
-            current-ad->features)))
+    (map #(score-feature-set (set %) result-set)
+         current-ad->features)))
 
 (defn get-winning-ad [current-features resulting-features]
   (let [results (get-scored-ads current-features resulting-features)]
     (->> results
-         (sort-by (comp :score second))
+         (sort-by :score)
          (last)
+         (assoc {} :winner)
          (merge {:features resulting-features}))))
 
 (defn run-auction [image env-features]
