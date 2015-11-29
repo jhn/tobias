@@ -43,19 +43,34 @@
     (let [res (f image creds)]        ; call f to POST
       (>!! c (json/read-str (:body res) :key-fn keyword))))) ; parse result as json, put it in c
 
+(defn- age->sym [n]
+  (let [age (if (string? n)
+              (Integer/parseInt n)
+              n)]
+    (cond
+      (>= age 50) :old
+      (>= age 30) :mid
+      :else       :young)))
+
+(defn- str->kw [str]
+  (-> str (.toLowerCase) (keyword)))
+
 (defn normalize-sightcorp [result]
-  (map (fn [x]
-         {:age    (get-in x [:age :value])
-          :gender (get-in x [:gender :value])})
+  (map (fn [r]
+         {:age    (age->sym (get-in r [:age :value]))
+          :gender (str->kw  (get-in r [:gender :value]))})
        (:persons result)))
 
 (defn normalize-microsoft [result]
-  (map :attributes result))
+  (map (fn [r]
+         {:age    (age->sym (get-in r [:attributes :age]))
+          :gender (str->kw  (get-in r [:attributes :gender]))})
+       result))
 
 (defn normalize-faceplus [result]
-  (map (fn [x]
-         {:age    (get-in x [:attribute :age :value])
-          :gender (get-in x [:attribute :gender :value])})
+  (map (fn [r]
+         {:age    (age->sym (get-in r [:attribute :age :value]))
+          :gender (str->kw  (get-in r [:attribute :gender :value]))})
        (:face result)))
 
 (defn get-features [image]
