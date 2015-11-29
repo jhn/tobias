@@ -17,22 +17,26 @@
    :location  [:prime :average]
    :gender    [:male :female]
    :age       [:young :mid :old]
-   :weather   [:sunny :rainny]})
+   :weather   [:sunny :rainy]})
 
 (def ads->features-example
   "An example of a map that holds each ad and its preferred features"
   {:ad1 {:ethnicity :asian
-         :weather   :sunny
+         :weather   :rainy
          :location  :prime
+         :age       :mid
+         :gender    :male
          :url       "http://example.com/1.jpg"}
    :ad2 {:age       :mid
+         :gender    :female
          :location  :average
          :url       "http://example.com/2.jpg"}
    :ad3 {:weather   :sunny
+         :gender    :male
          :url       "http://example.com/3.jpg"}
    :ad4 {:gender    :male
          :age       :old
-         :location :prime
+         :location  :prime
          :url       "http://example.com/4.jpg"}})
 
 (def result-features-example
@@ -71,12 +75,20 @@
   (let [results (get-scored-ads current-features resulting-features)]
     (->> results
          (sort-by (comp :score second))
-         last)))
+         (last)
+         (merge {:features resulting-features}))))
+
+(defn run-auction [image env-features]
+  (->> image
+       (get-features)
+       (first) ; select only one feature (possibly the one with highest confidence), should be more clever
+       (merge env-features)
+       (get-winning-ad ads->features-example)))
 
 (defroutes app-routes
   (GET "/" [] "OMG HI!")
   (POST "/auction/new"
-        {{{image :tempfile} :file} :params} (response (timed (get-features image))))
+        {{{image :tempfile} :file} :params} (response (run-auction image {:location :prime :weather :sunny})))
   (route/not-found "Not Found"))
 
 (def app

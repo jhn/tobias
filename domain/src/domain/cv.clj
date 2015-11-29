@@ -40,7 +40,7 @@
    image                              ; image on which to run cv
    creds]                             ; creds for the cv api
   (thread                             ; gets its own thread because we're blocking
-    (let [res (f image creds)]        ; call f to POST
+    (let [res (timed (f image creds))]        ; call f to POST
       (>!! c (json/read-str (:body res) :key-fn keyword))))) ; parse result as json, put it in c
 
 (defn- age->sym [n]
@@ -73,7 +73,9 @@
           :gender (str->kw  (get-in r [:attribute :gender :value]))})
        (:face result)))
 
-(defn get-features [image]
+(defn get-features
+  "Returns a normalized response for the features in the image"
+  [image]
   (let [sightcorp-chan (chan)
         microsoft-chan (chan)
         faceplus-chan  (chan)]
