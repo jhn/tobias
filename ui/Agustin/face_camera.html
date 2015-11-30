@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>tracking.js - face with camera</title>
-  <link rel="stylesheet" href="assets/demo.css">
 
   <script src="tracking-min.js"></script>
   <script src="face-min.js"></script>
@@ -38,34 +37,17 @@
 			Webcam.snap( function(data_uri) {
 				// display results in page
                 console.log(data_uri);
-				document.getElementById('results').innerHTML = 
-					'<h2>Here is your image:</h2>' + 
+				document.getElementById('results').innerHTML =
+					'<h2>Here is your image:</h2>' +
 					'<img src="'+data_uri+'"/>';
-			} );
-            var url = "sample-url.php";
-            var params = "lorem=ipsum&name=alpha";
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", url, true);
-
-            //Send the proper header information along with the request
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhr.send(params);
+          Webcam.upload( data_uri, 'upload.php', function(code, text) {
+              // Upload complete!
+              // 'code' will be the HTTP response code from the server, e.g. 200
+              // 'text' will be the raw response content
+          });
+			});
 		}
 	</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   <div class="demo-frame">
     <div class="demo-container">
@@ -89,7 +71,7 @@
       tracker.on('track', function(event) {
         event.data.forEach(function(rect) {
             console.log("FACE Detected");
-            take_snapshot()
+            take_snapshot();
         });
       });
       var gui = new dat.GUI();
