@@ -90,9 +90,9 @@
        (get-winning-ad ads->features-example)))
 
 (defroutes app-routes
-  (GET "/" [] "OMG HI!")
   (POST "/auction/new"
         {{{image :tempfile} :file} :params} (response (run-auction image {:location :prime :weather :sunny})))
+  (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app
