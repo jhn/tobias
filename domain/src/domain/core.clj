@@ -6,6 +6,7 @@
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [response]]
+            [ring.adapter.jetty :refer [run-jetty]]
             [domain.cv :refer [get-features]]
             [domain.util :refer [timed]])
   (:gen-class))
@@ -103,3 +104,5 @@
       (wrap-cors :access-control-allow-origin [#".*"]
                  :access-control-allow-methods [:post])))
 
+(defn -main [& args]
+  (run-jetty app {:port 3000}))
