@@ -14,7 +14,6 @@
                  [ring-cors "0.1.7"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler domain.core/app
-         :nrepl {:start? true
-                 :port 3001}}
-  :jvm-opts ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"]
+         :nrepl {:start? true :port 3001}}
+  :profiles {:dev {:jvm-opts ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"]}}
   :aot [domain.core])
