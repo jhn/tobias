@@ -4,6 +4,7 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [response]]
             [domain.cv :refer [get-features]]
             [domain.util :refer [timed]])
@@ -98,4 +99,7 @@
       (wrap-defaults api-defaults)
       (wrap-json-body {:keywords? true})
       (wrap-json-response)
-      (wrap-multipart-params)))
+      (wrap-multipart-params)
+      (wrap-cors :access-control-allow-origin [#".*"]
+                 :access-control-allow-methods [:post])))
+
