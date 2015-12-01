@@ -1,4 +1,4 @@
-(ns domain.core
+(ns tobias.core
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
@@ -7,8 +7,8 @@
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [response]]
             [ring.adapter.jetty :refer [run-jetty]]
-            [domain.cv :refer [get-features]]
-            [domain.util :refer [timed]])
+            [tobias.cv :refer [get-features]]
+            [tobias.util :refer [timed]])
   (:gen-class))
 
 (def ads->features (atom {}))

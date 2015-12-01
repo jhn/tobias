@@ -1,6 +1,6 @@
-# domain
+# Tobias
 
-Domain holds the business logic of Tobias.
+A CV + RTB platform.
 
 ## What it does
 

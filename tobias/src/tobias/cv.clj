@@ -1,8 +1,8 @@
-(ns domain.cv
+(ns tobias.cv
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
             [clojure.core.async :refer [chan alts!! thread >!!]]
-            [domain.util :refer [timed load-config]]))
+            [tobias.util :refer [timed load-config]]))
 
 (def config (load-config (clojure.java.io/resource "config.edn")))
 

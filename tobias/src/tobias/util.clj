@@ -1,4 +1,4 @@
-(ns domain.util
+(ns tobias.util
   (:require [clojure.edn :as edn]))
 
 ; from http://aan.io/timing-clojure-macros/
