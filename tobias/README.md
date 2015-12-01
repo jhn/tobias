@@ -23,20 +23,26 @@ Create standard uberjar, build the Docker image, run it like the wind.
 
 1. Create uberjar
 
+    ```
     lein uberjar
+    ```
 
 2. Build Docker image
 
+    ```
     docker build -t tobias .
+    ```
 
 3. Run image
 
+    ```bash
     docker run \
       -d              # as daemon
       -p 80:3000 \    # internet:jetty
       -p 3001:3001 \  # internet:nrepl
       --name tobias   # container name
       tobias          # our image
+    ```
 
 If running somewhere else, before running the image either:
 
@@ -47,13 +53,19 @@ Or
 
 1. Save image as tar
 
+    ```
     docker save -o tobias.tar tobias
+    ```
 
 2. Copy image to target server
 
+    ```
     scp tobias.tar user@host:path
+    ```
 
 3. Load image in target
 
+    ```
     docker load -i tobias.tar
+    ```
 
