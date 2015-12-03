@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>tracking.js - face with camera</title>
+  <title>Tobias</title>
 
-    <script src="tracking-min.js"></script>
-    <script src="face-min.js"></script>
+  <script src="tracking-min.js"></script>
+  <script src="face-min.js"></script>
 
   <style>
   video, canvas {
@@ -17,6 +17,8 @@
 </head>
 <body>
 	<div id="file">Your captured image will appear here...</div>
+  <div id="ad_div">WHERE ARE YOU</div>
+
 	<div id="my_camera"></div>
     <script type="text/javascript" src="webcam-min.js"></script>
 	<script language="JavaScript">
@@ -28,31 +30,50 @@
 		});
 		Webcam.attach( '#my_camera' );
 	</script>
-
+<!-- Code to handle taking the snapshot and displaying it locally -->
 	<script language="JavaScript">
-		function take_snapshot() {
-			Webcam.snap( function(data_uri) {
-				document.getElementById('file').innerHTML =
-					'<h2>Here is your image:</h2>' +
-					'<img src="'+data_uri+'"/>';
-          Webcam.upload(data_uri, 'auction/new', function(code, text) {
-            console.log(text);
-          });
-            });
+		function take_snapshot(count) {
+        // take snapshot and get image data
+        Webcam.snap(function(data_uri) {
+          // display results in page
+          //console.log(data_uri);
+            //console.log(data_uri);
+            if(count == 1) {
+              console.timeEnd("upload success");
+              console.time("upload success");
+              Webcam.upload( data_uri, 'auction/new', function(code, response) {
+                document.getElementById('file').innerHTML =
+                  '<h2>Here is your image:</h2>' +
+                  '<img src="'+data_uri+'"/>';
+                console.log("response: " + response);
+                var json = JSON.parse(response);
+                console.log("url: " + json.url);
+                document.getElementById('ad_div').innerHTML =
+                  '<h2>Here is your ad:</h2>' +
+                  '<img src="'+json.url+'"/>';
+                // Upload complete!
+                // 'code' will be the HTTP response code from the server, e.g. 200
+                // 'text' will be the raw response content
+              });
+            }
+        });
 		}
 	</script>
+
 
   <div class="demo-frame">
     <div class="demo-container">
       <video id="video" width="320" height="240" preload autoplay loop muted></video>
-      <canvas id="canvas" width="320" height="240"></canvas>
+      <!--<canvas id="canvas" width="320" height="240"></canvas>-->
     </div>
   </div>
 
   <script>
     window.onload = function() {
+      var counter = 0;
       var video = document.getElementById('video');
-      var canvas = document.getElementById('canvas');
+      //var canvas = document.getElementById('canvas');
+      //var context = canvas.getContext('2d');
 
       var tracker = new tracking.ObjectTracker('face');
       tracker.setInitialScale(4);
@@ -62,7 +83,12 @@
       tracking.track('#video', tracker, { camera: true });
       tracker.on('track', function(event) {
         event.data.forEach(function(rect) {
-            take_snapshot();
+            //console.log("FACE Detected");
+            counter = counter + 1;
+            take_snapshot(counter);
+            if(counter == 50) {
+              counter = 0;
+            }
         });
       });
     };
