@@ -89,9 +89,14 @@
        (merge env-features)
        (get-winning-ad ads->features-example)))
 
+(defn run-auction2 [image env-features]
+  (let [res {:foo :bar
+            :gender "M"
+            :url "http://cdn.playbuzz.com/cdn/0079c830-3406-4c05-a5c1-bc43e8f01479/7dd84d70-768b-492b-88f7-a6c70f2db2e9.jpg"}] res))
+
 (defroutes app-routes
   (POST "/auction/new"
-        {{{image :tempfile} :file} :params} (response (run-auction image {:location :prime :weather :sunny})))
+        {{{image :tempfile} :file} :params} (response (run-auction2 image {:location :prime :weather :sunny})))
   (route/resources "/")
   (route/not-found "Not Found"))
 
