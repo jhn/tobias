@@ -5,7 +5,7 @@
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [ring.util.response :refer [response]]
+            [ring.util.response :refer [response resource-response content-type]]
             [ring.adapter.jetty :refer [run-jetty]]
             [tobias.cv :refer [get-features]]
             [tobias.util :refer [timed]])
@@ -95,6 +95,7 @@
             :url "http://cdn.playbuzz.com/cdn/0079c830-3406-4c05-a5c1-bc43e8f01479/7dd84d70-768b-492b-88f7-a6c70f2db2e9.jpg"}] res))
 
 (defroutes app-routes
+  (GET "/" [] (content-type (resource-response "index.html" {:root "public"}) "text/html"))
   (POST "/auction/new"
         {{{image :tempfile} :file} :params} (response (run-auction2 image {:location :prime :weather :sunny})))
   (route/resources "/")
