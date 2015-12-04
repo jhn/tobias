@@ -8,7 +8,7 @@
             [ring.util.response :refer [response resource-response content-type]]
             [ring.adapter.jetty :refer [run-jetty]]
             [tobias.cv :refer [get-features]]
-            [tobias.util :refer [timed load-config]])
+            [tobias.util :refer [timed load-config map-values]])
   (:gen-class))
 
 (def features
@@ -53,9 +53,6 @@
        (first) ; select only one feature (possibly the one with highest confidence), should be more clever
        (merge env-features)
        (get-winning-ad ads)))
-
-(defn map-values [m f]
-  (reduce (fn [m' [k v]] (assoc m' k (f v))) {} m))
 
 (defn random-features []
   (map-values features rand-nth))

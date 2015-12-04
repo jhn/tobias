@@ -14,5 +14,8 @@
                  ": " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
        return#)))
 
+(defn map-values [m f]
+  (reduce (fn [m' [k v]] (assoc m' k (f v))) {} m))
+
 (defn load-config [filename]
   (edn/read-string (slurp filename)))
