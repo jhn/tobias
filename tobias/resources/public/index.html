@@ -1,22 +1,28 @@
 <!doctype html>
 <html>
 <head>
+
   <meta charset="utf-8">
-  <title>Tobias</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Tobias</title>
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="custom.css">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles/custom.css">
+
+  <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="scripts/tracking-min.js"></script>
   <script type="text/javascript" src="scripts/face-min.js"></script>
-  <script type="text/javascript" src="scripts/webcam-min.js"></script>
   <script type="text/javascript" src="scripts/tobias.js"></script>
 
 </head>
+
 <body>
   <div class="row">
     <div id="file" class="col-lg-6 col-md-6 pic">Your captured image will appear here...</div>
-    <div id="file2" class="col-lg-6 col-md-6 pic"></div>
+    <div id="ad_container" class="col-lg-6 col-md-6 pic">
+        <img id="ad" src="">
+    </div>
   </div>
 
   <div id="text" class="dem_tags" style="display:none">
@@ -29,13 +35,14 @@
   </div>
 
   <div class="row">
-  	<div id="my_camera"></div>
-    <div class="demo-frame">
-      <div class="demo-container">
+      <div class="camera">
         <video id="video" width="320" height="240" preload autoplay loop muted></video>
-        <!--<canvas id="canvas" width="320" height="240"></canvas>-->
       </div>
-    </div>
   </div>
+
+  <div class="row">
+      <canvas id="canvas" width="336" height="280" style="display: none"></canvas>
+  </div>
+
 </body>
 </html>
