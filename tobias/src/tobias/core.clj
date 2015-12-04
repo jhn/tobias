@@ -29,21 +29,22 @@
     :location  :prime
     :age       :mid
     :gender    :male
-    :url       "http://example.com/1.jpg"}
+    :url       "http://www.zillowstatic.com/static/images/ad_gallery/chevy-300x250.jpg"}
    {:id        :two
     :age       :mid
     :gender    :female
     :location  :average
-    :url       "http://example.com/2.jpg"}
+    :url       "http://www.fashionadexplorer.com/l-yE0JkxpIlKdLO9ot.jpg"}
    {:id        :three
     :weather   :sunny
     :gender    :male
-    :url       "http://example.com/3.jpg"}
+    :age       :mid
+    :url       "https://webtoolfeed.files.wordpress.com/2012/04/4bd863d620bf61.jpg"}
    {:id        :four
     :gender    :male
     :age       :old
     :location  :prime
-    :url       "http://example.com/4.jpg"}])
+    :url       "http://files2.coloribus.com/files/adsarchive/part_944/9449805/file/life-insurance-deck-chair-small-69163.jpg"}])
 
 (def result-features-example
   "An example of a resulting map obtained from Tobiaz' UI and CV"
@@ -51,13 +52,6 @@
    :ethnicity :asian
    :weather   :sunny
    :gender    :male})
-
-; Maybe we can add this information to the resulting response
-(def advertisers->ads
-  "A map that holds ads per advertiser"
-  {:advertiser1 #{:ad1 :ad2}
-   :advertiser2 #{:ad3}
-   :advertiser3 #{:ad4}})
 
 (defn score-feature-set [feature-set result-set]
   "Returns an ad's feature set scored"
@@ -89,15 +83,43 @@
        (merge env-features)
        (get-winning-ad ads->features-example)))
 
-(defn run-auction2 [image env-features]
-  (let [res {:foo :bar
-            :gender "M"
-            :url "http://cdn.playbuzz.com/cdn/0079c830-3406-4c05-a5c1-bc43e8f01479/7dd84d70-768b-492b-88f7-a6c70f2db2e9.jpg"}] res))
+(def simulated-response
+  "An example of a map that holds each ad and its preferred features"
+  [{:id :one
+    :age       :mid
+    :gender    :male
+    :url       "http://marketing-mojo.com/wp-content/uploads/2013/11/2308906108657132479-copy.png"}
+   {:id        :two
+    :age       :mid
+    :gender    :female
+    :url       "http://assets.ilounge.com/images/uploads/b2_62.gif"}
+   {:id        :three
+    :gender    :male
+    :age       :mid
+    :url       "https://mir-s3-cdn-cf.behance.net/project_modules/disp/05cd6a12328509.56266a8c003f1.jpg"}
+   {:id        :four
+    :age       :old
+    :gender    :male
+    :url       "http://realreachmarketing.com/wp-content/uploads/2015/08/Pool_Ad_family1.jpg"}
+   {:id        :four
+    :age       :old
+    :gender    :male
+    :url       "http://www.terrymehilos.com/images/banner-336x280.jpg"}
+   {:id        :four
+    :age       :old
+    :gender    :male
+    :url       "https://mkbydesign.files.wordpress.com/2014/01/amanda-myers-multimedia-campaign-coke-website-banner.gif?w=620"}
+   ])
+
+(defn run-simulation [image env-features]
+  {:url (:url (rand-nth simulated-response))})
 
 (defroutes app-routes
   (GET "/" [] (content-type (resource-response "index.html" {:root "public"}) "text/html"))
   (POST "/auction/new"
-        {{{image :tempfile} :file} :params} (response (run-auction2 image {:location :prime :weather :sunny})))
+        {{{image :tempfile} :file} :params} (response (run-auction image {:location :prime :weather :sunny})))
+  (POST "/simulation/new"
+        {{{image :tempfile} :file} :params} (response (run-simulation image {:location :prime :weather :sunny})))
   (route/resources "/")
   (route/not-found "Not Found"))
 
