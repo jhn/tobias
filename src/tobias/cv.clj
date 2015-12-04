@@ -60,7 +60,8 @@
   (map (fn [r]
          {:age       (age->sym (get-in r [:age :value]))
           :gender    (str->kw  (get-in r [:gender :value]))
-          :ethnicity (str->kw  (get-in r [:ethnicity :value]))})
+          :ethnicity (str->kw  (get-in r [:ethnicity :value]))
+          :clothing  (get r :clothingcolors [])})
        (:persons result)))
 
 (defn normalize-microsoft [result]
