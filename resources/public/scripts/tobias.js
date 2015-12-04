@@ -38,17 +38,20 @@ $(function() {
           type: 'POST',
           dataType: "json"
         }).done(function(data) {
-            var features = extractFeatures(data['features']);
+            var features = mapToLi(data['features']);
             $("#features").find("ul").html(features.join("\n"));
+
+            var matches = mapToLi(data['winner']['matches']);
+            $("#matches").find("ul").html(matches.join("\n"));
 
             console.log("Winner ad: ", data['winner']);
             $("#ad").attr("src", data['winner']['url']);
         });
     }
 
-    function extractFeatures(features) {
-        return Object.keys(features).map(function (key) {
-            return "<li>" + key + ": " + features[key] + "</li>";
+    function mapToLi(m) {
+        return Object.keys(m).map(function (key) {
+            return "<li>" + key + ": " + m[key] + "</li>";
         });
     }
 });
