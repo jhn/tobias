@@ -55,10 +55,12 @@
 (defn- str->kw [str]
   (-> str (.toLowerCase) (keyword)))
 
+
 (defn normalize-sightcorp [result]
   (map (fn [r]
-         {:age    (age->sym (get-in r [:age :value]))
-          :gender (str->kw  (get-in r [:gender :value]))})
+         {:age       (age->sym (get-in r [:age :value]))
+          :gender    (str->kw  (get-in r [:gender :value]))
+          :ethnicity (str->kw  (get-in r [:ethnicity :value]))})
        (:persons result)))
 
 (defn normalize-microsoft [result]
