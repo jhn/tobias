@@ -38,8 +38,9 @@ $(function() {
           type: 'POST',
           dataType: "json"
         }).done(function(data) {
-            console.log(data);
-            $("#ad").attr("src", data.url);
+            console.log("Image features: ", data.features);
+            console.log("Winner ad: ", data.winner);
+            $("#ad").attr("src", data.winner.url);
         });
     }
 
