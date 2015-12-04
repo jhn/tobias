@@ -10,6 +10,6 @@ pom.xml.asc
 .hgignore
 .hg/
 *.iml
-*/.idea
+*.idea/
 
-cv/api.keys
+config.edn
