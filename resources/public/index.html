@@ -18,34 +18,40 @@
 </head>
 
 <body>
-
+<!--
   <div class="row">
       <div class="camera">
         <video id="video" width="320" height="240" preload autoplay loop muted></video>
       </div>
   </div>
+-->
 
   <div class="row">
-      <canvas id="canvas" width="320" height="240" style="display: none"></canvas>
+      <canvas id="canvas" width="640" height="480" style="display: none"></canvas>
   </div>
 
   <div class="row">
-    <div id="file" class="col-lg-6 col-md-6 pic">Your captured image will appear here...</div>
+    <!--<div id="file" class="col-lg-6 col-md-6 pic">Your captured image will appear here...</div>-->
+    <div class="camera col-lg-6 col-md-6 pic">
+      <video id="video" width="640" height="480" preload autoplay loop muted></video>
+    </div>
     <div id="ad_container" class="col-lg-6 col-md-6 pic">
         <img id="ad" src="">
     </div>
   </div>
 
-  <div id="features" class="dem_tags">
-    <p>Tagged demographics:</p>
-      <ul>
-      </ul>
-  </div>
+  <div id="dem-data" class="row">
+    <div id="features" class="dem-tags col-lg-6 col-md-6">
+      <p class="text-center">Tagged demographics:</p>
+      <table class="table table-bordered text-center">
+      </table>
+    </div>
 
-  <div id="matches" class="dem_tags">
-    <p>Matched demographics:</p>
-      <ul>
-      </ul>
+    <div id="matches" class="dem-tags col-lg-6 col-md-6">
+      <p class="text-center">Matched demographics:</p>
+      <table class="table table-bordered text-center">
+      </table>
+    </div>
   </div>
 
 </body>

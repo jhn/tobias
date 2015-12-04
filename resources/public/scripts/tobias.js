@@ -12,7 +12,7 @@ $(function() {
     tracker.on('track', function(event) {
         event.data.forEach(function() {
             counter = counter + 1;
-            if (counter % 40 == 0) {
+            if (counter % 1 == 0) {
                 console.log("uploading snapshot");
                 take_snapshot(upload);
             }
@@ -22,7 +22,7 @@ $(function() {
     tracking.track('#video', tracker, { camera: true });
 
     function take_snapshot(callback) {
-        canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
+        canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
         var compression = 0.98;
         return canvas.toBlob(callback, "image/jpeg", compression);
     }
@@ -39,10 +39,10 @@ $(function() {
           dataType: "json"
         }).done(function(data) {
             var features = mapToLi(data['features']);
-            $("#features").find("ul").html(features.join("\n"));
+            $("#features").find("table").html(features.join("\n"));
 
             var matches = mapToLi(data['winner']['matches']);
-            $("#matches").find("ul").html(matches.join("\n"));
+            $("#matches").find("table").html(matches.join("\n"));
 
             console.log("Winner ad: ", data['winner']);
             $("#ad").attr("src", data['winner']['url']);
@@ -51,7 +51,7 @@ $(function() {
 
     function mapToLi(m) {
         return Object.keys(m).map(function (key) {
-            return "<li>" + key + ": " + m[key] + "</li>";
+            return "<tr><td>" + key + "</td><td>" + m[key] + "</td></tr>";
         });
     }
 });
