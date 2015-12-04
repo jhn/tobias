@@ -7,12 +7,12 @@ $(function() {
 
     var counter = 0;
     var video = $('#video')[0];
-    var canvas = $('canvas')[0];
+    var canvas = $('#canvas')[0];
 
     tracker.on('track', function(event) {
         event.data.forEach(function() {
             counter = counter + 1;
-            if (counter % 1 == 0) {
+            if (counter % 5 == 0) {
                 console.log("uploading snapshot");
                 take_snapshot(upload);
             }
