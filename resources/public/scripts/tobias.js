@@ -23,7 +23,7 @@ $(function() {
 
     function take_snapshot(callback) {
         canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
-        var compression = 0.90;
+        var compression = 0.98;
         return canvas.toBlob(callback, "image/jpeg", compression);
     }
 
