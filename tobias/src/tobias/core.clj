@@ -51,15 +51,21 @@
        (merge env-features)
        (get-winning-ad ads)))
 
-(defn run-simulation [image]
-  {:winner (rand-nth ads)})
+(defn map-values [m f]
+  (reduce (fn [m' [k v]] (assoc m' k (f v))) {} m))
+
+(defn run-simulation []
+  (let [winner-ad (rand-nth ads)]
+    {:winner winner-ad
+     :features (->> (map-values features rand-nth)
+                    (merge (select-keys winner-ad [:age :gender])))})) ; merge with winner's age/gender
 
 (defroutes app-routes
   (GET "/" [] (content-type (resource-response "index.html" {:root "public"}) "text/html"))
   (POST "/auction/new"
         {{{image :tempfile} :file} :params} (response (run-auction image {:location :prime :weather :sunny})))
   (POST "/simulation/new"
-        {{{image :tempfile} :file} :params} (response (run-simulation image)))
+        {{{image :tempfile} :file} :params} (response (run-simulation)))
   (route/resources "/")
   (route/not-found "Not Found"))
 
