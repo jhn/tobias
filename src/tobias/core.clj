@@ -16,7 +16,7 @@
   {:ethnicity [:asian :black :hispanic :white]
    :location  [:prime :average]
    :gender    [:male :female]
-   :age       [:young :mid :old]
+   :age       [:young :mid :elder]
    :weather   [:sunny :rainy]})
 
 (defn score-feature-set [feature-set result-set]

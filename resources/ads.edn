@@ -12,7 +12,7 @@
  :age       :mid
  :url       "https://mir-s3-cdn-cf.behance.net/project_modules/disp/05cd6a12328509.56266a8c003f1.jpg"}
 {:id        :home-service
- :age       :old
+ :age       :elder
  :gender    :male
  :url       "http://www.terrymehilos.com/images/banner-336x280.jpg"}
 {:id        :mortgage
@@ -40,7 +40,7 @@
   :gender   :male
   :url      "http://blog.gerv.net/files/2011/08/mcdonalds-ad.png"}
  {:id       :budweiser
-  :age      :old
+  :age      :elder
   :gender   :male
   :url      "http://images.gofreedownload.net/thumps_middle/budweiser-98191.jpg"}
  {:id       :start-business
