@@ -8,7 +8,7 @@
             [ring.util.response :refer [response resource-response content-type]]
             [ring.adapter.jetty :refer [run-jetty]]
             [tobias.cv :refer [get-features]]
-            [tobias.util :refer [timed]])
+            [tobias.util :refer [timed load-config]])
   (:gen-class))
 
 (def ads->features (atom {}))
@@ -83,36 +83,9 @@
        (merge env-features)
        (get-winning-ad ads->features-example)))
 
-(def simulated-response
-  "An example of a map that holds each ad and its preferred features"
-  [{:id :one
-    :age       :mid
-    :gender    :male
-    :url       "http://marketing-mojo.com/wp-content/uploads/2013/11/2308906108657132479-copy.png"}
-   {:id        :two
-    :age       :mid
-    :gender    :female
-    :url       "http://assets.ilounge.com/images/uploads/b2_62.gif"}
-   {:id        :three
-    :gender    :male
-    :age       :mid
-    :url       "https://mir-s3-cdn-cf.behance.net/project_modules/disp/05cd6a12328509.56266a8c003f1.jpg"}
-   {:id        :four
-    :age       :old
-    :gender    :male
-    :url       "http://realreachmarketing.com/wp-content/uploads/2015/08/Pool_Ad_family1.jpg"}
-   {:id        :four
-    :age       :old
-    :gender    :male
-    :url       "http://www.terrymehilos.com/images/banner-336x280.jpg"}
-   {:id        :four
-    :age       :old
-    :gender    :male
-    :url       "https://mkbydesign.files.wordpress.com/2014/01/amanda-myers-multimedia-campaign-coke-website-banner.gif?w=620"}
-   ])
+(def ads (load-config (clojure.java.io/resource "ads.edn")))
 
-(defn run-simulation [image env-features]
-  {:url (:url (rand-nth simulated-response))})
+(defn run-simulation [image env-features] (rand-nth ads))
 
 (defroutes app-routes
   (GET "/" [] (content-type (resource-response "index.html" {:root "public"}) "text/html"))
