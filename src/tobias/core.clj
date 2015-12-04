@@ -37,8 +37,11 @@
 (defn get-winning-ad [current-features resulting-features]
   (let [results (get-scored-ads current-features resulting-features)]
     (->> results
-         (sort-by :score)
+         (group-by :score)
+         (sort)
          (last)
+         (second)
+         (rand-nth)
          (assoc {} :winner)
          (merge {:features resulting-features}))))
 
