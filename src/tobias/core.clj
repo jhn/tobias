@@ -28,22 +28,22 @@
       :matches matching-features
       :score (count matching-features))))
 
-(defn get-scored-ads [current-ad->features resulting-features]
+(defn get-scored-ads [ads resulting-features]
   "Given a map of resulting features, computes the score for each ad feature"
   (let [result-set (set resulting-features)] ; convert to set for easy operation
     (map #(score-feature-set (set %) result-set)
-         current-ad->features)))
+         ads)))
 
-(defn get-winning-ad [current-features resulting-features]
-  (let [results (get-scored-ads current-features resulting-features)]
+(defn get-winning-ad [ads resulting-features]
+  (let [results (get-scored-ads ads resulting-features)]
     (->> results
          (group-by :score)
          (sort)
-         (last)
-         (second)
-         (rand-nth)
-         (assoc {} :winner)
-         (merge {:features resulting-features}))))
+         (last)                                             ; get the highest-scored maps
+         (second)                                           ; discard score
+         (rand-nth)                                         ; a random one from the group
+         (assoc {} :winner)                                 ; make that the winner
+         (merge {:features resulting-features}))))          ; also include the image's features
 
 (def ads (load-config (clojure.java.io/resource "ads.edn")))
 
@@ -57,18 +57,19 @@
 (defn map-values [m f]
   (reduce (fn [m' [k v]] (assoc m' k (f v))) {} m))
 
-(defn run-simulation []
-  (let [winner-ad (rand-nth ads)]
-    {:winner winner-ad
-     :features (->> (map-values features rand-nth)
-                    (merge (select-keys winner-ad [:age :gender])))})) ; merge with winner's age/gender
+(defn random-features []
+  (map-values features rand-nth))
+
+(defn run-simulation [env-features]
+  (let [simulated-result (merge env-features (random-features))]
+    (get-winning-ad ads simulated-result)))
 
 (defroutes app-routes
   (GET "/" [] (content-type (resource-response "index.html" {:root "public"}) "text/html"))
   (POST "/auction/new"
         {{{image :tempfile} :file} :params} (response (run-auction image {:location :prime :weather :sunny})))
   (POST "/simulation/new"
-        {{{image :tempfile} :file} :params} (response (run-simulation)))
+        {{{image :tempfile} :file} :params} (response (run-simulation {:location :prime :weather :sunny})))
   (route/resources "/")
   (route/not-found "Not Found"))
 
