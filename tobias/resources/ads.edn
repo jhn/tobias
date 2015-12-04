@@ -1,4 +1,5 @@
-[{:id        :one
+[
+ {:id       :one
  :age       :mid
  :gender    :male
  :url       "http://marketing-mojo.com/wp-content/uploads/2013/11/2308906108657132479-copy.png"}
@@ -13,12 +14,41 @@
 {:id        :four
  :age       :old
  :gender    :male
- :url       "http://realreachmarketing.com/wp-content/uploads/2015/08/Pool_Ad_family1.jpg"}
+ :url       "http://www.terrymehilos.com/images/banner-336x280.jpg"}
 {:id        :four
+ :age       :old
+ :gender    :male
+ :url       "http://usdaloans-101.com/wp-content/uploads/2012/09/tree_apr.jpg"}
+{:id        :four
+ :age       :old
+ :gender    :male
+ :url       "https://mkbydesign.files.wordpress.com/2014/01/amanda-myers-multimedia-campaign-coke-website-banner.gif?w=620"}
+ {:id       :five
+  :age      :old
+  :gender   :female
+  :url      "http://www.permies.com/t/40855/a/26677/hgfs-bigger.jpg"}
+ {:id       :six
+  :age      :old
+  :gender   :female
+  :url      "http://media.vcommission.com/brand/files/vcm/120/Lenskart_GSets499_336X280.jpg"}
+ {:id       :seven
   :age      :old
   :gender   :male
-  :url      "http://www.terrymehilos.com/images/banner-336x280.jpg"}
-{:id        :four
+  :url      "http://realreachmarketing.com/wp-content/uploads/2015/08/Pool_Ad_family1.jpg"}
+ {:id       :mcdonalds
   :age      :old
   :gender   :male
-  :url      "https://mkbydesign.files.wordpress.com/2014/01/amanda-myers-multimedia-campaign-coke-website-banner.gif?w=620"}]
+  :url      "http://blog.gerv.net/files/2011/08/mcdonalds-ad.png"}
+ {:id       :budweiser
+  :age      :old
+  :gender   :male
+  :url      "http://images.gofreedownload.net/thumps_middle/budweiser-98191.jpg"}
+ {:id       :start-business
+  :age      :old
+  :gender   :female
+  :url      "http://craigduswalt.com/RockStarMarketingBootCamp/wp-content/uploads/2015/08/lg-rectangle-01.jpg"}
+ {:id       :style-bop
+  :age      :old
+  :gender   :female
+  :url      "http://media.stylebop.com/affiliate/de/Women/jpg/336x280/01.jpg"}
+]
