@@ -38,20 +38,36 @@ $(function() {
           type: 'POST',
           dataType: "json"
         }).done(function(data) {
-            var features = mapToLi(data['features']);
+            if (data['features']['clothingcolors']) {
+                data['features']['clothingcolors'] = data['features']['clothingcolors'].map(toCircle).join("");
+            }
+
+            var features = mapToTr(data['features']);
             $("#features").find("table").html(features.join("\n"));
 
-            var matches = mapToLi(data['winner']['matches']);
+            var matches = mapToTr(data['winner']['matches']);
             $("#matches").find("table").html(matches.join("\n"));
 
             console.log("Winner ad: ", data['winner']);
             $("#ad").attr("src", data['winner']['url']);
         });
+
+        function mapToTr(m) {
+            return Object.keys(m).map(function (key) {
+                return "<tr><td>" + key + "</td><td>" + m[key] + "</td></tr>";
+            });
+        }
+
+        function toCircle(color) {
+            var styles = [
+                "display: inline-block",
+                "border-radius: 50%/50%",
+                "width: 25px",
+                "height: 25px",
+                "background-color: " + color
+            ];
+            return "<span style='"+ styles.join(";") +"'></span>";
+        }
     }
 
-    function mapToLi(m) {
-        return Object.keys(m).map(function (key) {
-            return "<tr><td>" + key + "</td><td>" + m[key] + "</td></tr>";
-        });
-    }
 });

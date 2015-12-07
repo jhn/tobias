@@ -11,13 +11,17 @@
             [tobias.util :refer [timed load-config map-values]])
   (:gen-class))
 
-(def features
+(defn- hex-stream []
+  (repeatedly #(format "#%06X" (rand-int 16581376))))
+
+(defn features []
   "A map that holds features and their possible values"
   {:ethnicity [:asian :black :hispanic :white]
    :location  [:prime :average]
    :gender    [:male :female]
    :age       [:young :mid :elder]
-   :weather   [:sunny :rainy]})
+   :weather   [:sunny :rainy]
+   :clothingcolors (conj [] (into [] (take 3 (hex-stream))))})
 
 (defn score-feature-set [feature-set result-set]
   "Returns an ad's feature set scored"
@@ -55,7 +59,7 @@
        (get-winning-ad ads)))
 
 (defn random-features []
-  (map-values features rand-nth))
+  (map-values (features) rand-nth))
 
 (defn run-simulation [env-features]
   (let [simulated-result (merge env-features (random-features))]
