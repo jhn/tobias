@@ -38,8 +38,8 @@ $(function() {
           type: 'POST',
           dataType: "json"
         }).done(function(data) {
-            if (data['features']['clothingcolors']) {
-                data['features']['clothingcolors'] = data['features']['clothingcolors'].map(toCircle).join("");
+            if (data['features']['clothing']) {
+                data['features']['clothing'] = data['features']['clothing'].map(toCircle).join("");
             }
 
             var features = mapToTr(data['features']);

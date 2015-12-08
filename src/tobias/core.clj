@@ -21,7 +21,7 @@
    :gender    [:male :female]
    :age       [:young :mid :elder]
    :weather   [:sunny :rainy]
-   :clothingcolors (conj [] (into [] (take 3 (hex-stream))))})
+   :clothing  (conj [] (into [] (take 3 (hex-stream))))})
 
 (defn score-feature-set [feature-set result-set]
   "Returns an ad's feature set scored"
