@@ -18,7 +18,7 @@
               (Integer/parseInt n)
               n)]
     (cond
-      (>= age 50) :old
+      (>= age 50) :elder
       (>= age 30) :mid
       :else       :young)))
 
