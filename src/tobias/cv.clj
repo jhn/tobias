@@ -2,7 +2,8 @@
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
             [clojure.core.async :refer [chan alts!! thread >!!]]
-            [tobias.util :refer [timed load-config]]))
+            [tobias.util :refer [timed load-config]])
+  (:refer-clojure :exclude [name]))
 
 (def config (load-config (clojure.java.io/resource "config.edn")))
 
@@ -15,11 +16,14 @@
 
 (defprotocol CvProvider
   "Encapsulates a CV provider"
+  (name       [this]        "The name for this provider")
   (post-image [this image]  "Posts an image")
   (normalize  [this result] "Normalizes a result"))
 
 (def microsoft
   (reify CvProvider
+    (name [_] "Microsoft")
+
     (post-image [_ image] (http/post (str "https://api.projectoxford.ai/face/v0/detections"
                                           "?analyzesFaceLandmarks=false"
                                           "&analyzesAge=true"
@@ -36,6 +40,8 @@
 
 (def sightcorp
   (reify CvProvider
+    (name [_] "Sightcorp")
+
     (post-image [_ image] (http/post "http://api.sightcorp.com/api/detect/"
                                      {:multipart [{:name "img" :content image}
                                                   {:name "app_key" :content (sightcorp-creds :app_key)}
@@ -84,6 +90,7 @@
    (let [results (map (fn [provider]
                         (thread
                           (timed
+                            (name provider)
                             (->> image
                                  (post-image provider)
                                  (extract-json-body)

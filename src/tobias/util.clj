@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]))
 
 ; from http://aan.io/timing-clojure-macros/
-(defmacro timed [expr]
+(defmacro timed [name expr]
   (let [sym (= (type expr) clojure.lang.Symbol)]
     `(let [start# (. System (nanoTime))
            return# ~expr
@@ -10,7 +10,7 @@
                   (resolve '~expr)
                   (resolve (first '~expr)))]
        (prn (str "Timed "
-                 (:name (meta res#))
+                 (or ~name (:name (meta res#)))
                  ": " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
        return#)))
 
