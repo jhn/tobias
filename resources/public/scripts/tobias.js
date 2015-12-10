@@ -12,7 +12,7 @@ $(function() {
     tracker.on('track', function(event) {
         event.data.forEach(function() {
             counter = counter + 1;
-            if (counter % 5 == 0) {
+            if (counter % 100 == 0) {
                 console.log("uploading snapshot");
                 take_snapshot(upload);
             }
@@ -23,7 +23,7 @@ $(function() {
 
     function take_snapshot(callback) {
         canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
-        var compression = 0.98;
+        var compression = 1;
         return canvas.toBlob(callback, "image/jpeg", compression);
     }
 
