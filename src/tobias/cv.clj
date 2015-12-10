@@ -12,36 +12,53 @@
 
 (def sightcorp-creds (:sightcorp config))
 
-(defn post-sightcorp [tempfile creds]
-  (http/post "http://api.sightcorp.com/api/detect/"
-             {:multipart [{:name "img" :content tempfile}
-                          {:name "app_key" :content (creds :app_key)}
-                          {:name "client_id" :content (creds :client_id)}]}))
 
-(defn post-microsoft [tempfile creds]
-  (http/post (str "https://api.projectoxford.ai/face/v0/detections"
-                  "?analyzesFaceLandmarks=false"
-                  "&analyzesAge=true"
-                  "&analyzesGender=true"
-                  "&analyzesHeadPose=false")
-             {:headers {"Content-Type" "application/octet-stream"
-                        "Ocp-Apim-Subscription-Key" (creds :key)}
-              :body tempfile}))
+(defprotocol CvProvider
+  "Encapsulates a CV provider"
+  (post-image [this image]  "Posts an image")
+  (normalize  [this result] "Normalizes a result"))
+
+(def microsoft
+  (reify CvProvider
+    (post-image [_ image] (http/post (str "https://api.projectoxford.ai/face/v0/detections"
+                                          "?analyzesFaceLandmarks=false"
+                                          "&analyzesAge=true"
+                                          "&analyzesGender=true"
+                                          "&analyzesHeadPose=false")
+                                     {:headers {"Content-Type" "application/octet-stream"
+                                                "Ocp-Apim-Subscription-Key" (microsoft-creds :key)}
+                                      :body image}))
+
+    (normalize [_ result] (map (fn [r]
+                                 {:age    (age->sym (get-in r [:attributes :age]))
+                                  :gender (str->kw  (get-in r [:attributes :gender]))})
+                               result))))
+
+(def sightcorp
+  (reify CvProvider
+    (post-image [_ image] (http/post "http://api.sightcorp.com/api/detect/"
+                                     {:multipart [{:name "img" :content image}
+                                                  {:name "app_key" :content (sightcorp-creds :app_key)}
+                                                  {:name "client_id" :content (sightcorp-creds :client_id)}]}))
+
+    (normalize [_ result] (map (fn [r]
+                                 {:age       (age->sym (get-in r [:age :value]))
+                                  :gender    (str->kw  (get-in r [:gender :value]))
+                                  :ethnicity (str->kw  (get-in r [:ethnicity :value]))
+                                  :clothing  (get r :clothingcolors [])})
+                               (:persons result)))))
 
 (defn post-faceplus [tempfile creds]
   (http/post "http://apius.faceplusplus.com/detection/detect"
              {:multipart [{:name "img" :content tempfile}
-                                  {:name "api_key" :content (creds :api_key)}
-                                  {:name "api_secret" :content (creds :api_secret)}]}))
+                          {:name "api_key" :content (creds :api_key)}
+                          {:name "api_secret" :content (creds :api_secret)}]}))
 
-(defn post-cv
-  [c                                  ; out channel
-   f                                  ; a function that POSTs to a cv provider
-   image                              ; image on which to run cv
-   creds]                             ; creds for the cv api
-  (thread                             ; gets its own thread because we're blocking
-    (let [res (timed (f image creds))]        ; call f to POST
-      (>!! c (json/read-str (:body res) :key-fn keyword))))) ; parse result as json, put it in c
+(defn normalize-faceplus [result]
+  (map (fn [r]
+         {:age    (age->sym (get-in r [:attribute :age :value]))
+          :gender (str->kw  (get-in r [:attribute :gender :value]))})
+       (:face result)))
 
 (defn- age->sym [n]
   (let [age (if (string? n)
@@ -55,39 +72,22 @@
 (defn- str->kw [str]
   (-> str (.toLowerCase) (keyword)))
 
-
-(defn normalize-sightcorp [result]
-  (map (fn [r]
-         {:age       (age->sym (get-in r [:age :value]))
-          :gender    (str->kw  (get-in r [:gender :value]))
-          :ethnicity (str->kw  (get-in r [:ethnicity :value]))
-          :clothing  (get r :clothingcolors [])})
-       (:persons result)))
-
-(defn normalize-microsoft [result]
-  (map (fn [r]
-         {:age    (age->sym (get-in r [:attributes :age]))
-          :gender (str->kw  (get-in r [:attributes :gender]))})
-       result))
-
-(defn normalize-faceplus [result]
-  (map (fn [r]
-         {:age    (age->sym (get-in r [:attribute :age :value]))
-          :gender (str->kw  (get-in r [:attribute :gender :value]))})
-       (:face result)))
+(defn- extract-json-body [body]
+  (json/read-str (:body body) :key-fn keyword))
 
 (defn get-features
   "Returns a normalized response for the features in the image"
-  [image]
-  (let [sightcorp-chan (chan)
-        microsoft-chan (chan)
-        faceplus-chan  (chan)]
-    (post-cv microsoft-chan post-microsoft image microsoft-creds)
-    (post-cv faceplus-chan  post-faceplus  image faceplus-creds)
-    (post-cv sightcorp-chan post-sightcorp image sightcorp-creds)
-    (let [[result channel] (alts!! [sightcorp-chan microsoft-chan faceplus-chan])]
-      (condp = channel
-             sightcorp-chan :>> (fn [_] (prn :sightcorp) (normalize-sightcorp result))
-             microsoft-chan :>> (fn [_] (prn :microsoft) (normalize-microsoft result))
-             faceplus-chan  :>> (fn [_] (prn :faceplus)  (normalize-faceplus result))
-             :dunno))))
+  ([image]
+   (get-features image [sightcorp microsoft]))
+
+  ([image providers]
+   (let [results (map (fn [provider]
+                        (thread
+                          (timed
+                            (->> image
+                                 (post-image provider)
+                                 (extract-json-body)
+                                 (normalize provider)))))
+                      providers)
+         [first-result _] (alts!! results)]
+     first-result)))
