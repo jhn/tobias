@@ -13,6 +13,20 @@
 
 (def sightcorp-creds (:sightcorp config))
 
+(defn- age->sym [n]
+  (let [age (if (string? n)
+              (Integer/parseInt n)
+              n)]
+    (cond
+      (>= age 50) :old
+      (>= age 30) :mid
+      :else       :young)))
+
+(defn- str->kw [str]
+  (-> str (.toLowerCase) (keyword)))
+
+(defn- extract-json-body [body]
+  (json/read-str (:body body) :key-fn keyword))
 
 (defprotocol CvProvider
   "Encapsulates a CV provider"
@@ -54,37 +68,24 @@
                                   :clothing  (get r :clothingcolors [])})
                                (:persons result)))))
 
-(defn post-faceplus [tempfile creds]
-  (http/post "http://apius.faceplusplus.com/detection/detect"
-             {:multipart [{:name "img" :content tempfile}
-                          {:name "api_key" :content (creds :api_key)}
-                          {:name "api_secret" :content (creds :api_secret)}]}))
+(def faceplus
+  (reify CvProvider
+    (name [_] "Faceplus")
 
-(defn normalize-faceplus [result]
-  (map (fn [r]
-         {:age    (age->sym (get-in r [:attribute :age :value]))
-          :gender (str->kw  (get-in r [:attribute :gender :value]))})
-       (:face result)))
+    (post-image [_ image] (http/post "http://apius.faceplusplus.com/detection/detect"
+                                     {:multipart [{:name "img" :content image}
+                                                  {:name "api_key" :content (faceplus-creds :api_key)}
+                                                  {:name "api_secret" :content (faceplus-creds :api_secret)}]}))
 
-(defn- age->sym [n]
-  (let [age (if (string? n)
-              (Integer/parseInt n)
-              n)]
-    (cond
-      (>= age 50) :old
-      (>= age 30) :mid
-      :else       :young)))
-
-(defn- str->kw [str]
-  (-> str (.toLowerCase) (keyword)))
-
-(defn- extract-json-body [body]
-  (json/read-str (:body body) :key-fn keyword))
+    (normalize [_ result] (map (fn [r]
+                                 {:age    (age->sym (get-in r [:attribute :age :value]))
+                                  :gender (str->kw  (get-in r [:attribute :gender :value]))})
+                               (:face result)))))
 
 (defn get-features
   "Returns a normalized response for the features in the image"
   ([image]
-   (get-features image [sightcorp microsoft]))
+   (get-features image [sightcorp microsoft faceplus]))
 
   ([image providers]
    (let [results (map (fn [provider]
