@@ -44,7 +44,7 @@
                       "&analyzesGender=true"
                       "&analyzesHeadPose=false")
                  {:headers {"Content-Type" "application/octet-stream"
-                            "Ocp-Apim-Subscription-Key" (microsoft-creds :key)}
+                            "Ocp-Apim-Subscription-Key" (:key microsoft-creds)}
                   :body image}))
     (normalize [_ result]
       (map (fn [r]
@@ -58,8 +58,8 @@
     (features [_ image]
       (http/post "http://api.sightcorp.com/api/detect/"
                  {:multipart [{:name "img" :content image}
-                              {:name "app_key" :content (sightcorp-creds :app_key)}
-                              {:name "client_id" :content (sightcorp-creds :client_id)}]}))
+                              {:name "app_key" :content (:app_key sightcorp-creds)}
+                              {:name "client_id" :content (:client_id sightcorp-creds)}]}))
     (normalize [_ result]
       (map (fn [r]
              {:age       (age->sym (get-in r [:age :value]))
@@ -74,8 +74,8 @@
     (features [_ image]
       (http/post "http://apius.faceplusplus.com/detection/detect"
                  {:multipart [{:name "img" :content image}
-                              {:name "api_key" :content (faceplus-creds :api_key)}
-                              {:name "api_secret" :content (faceplus-creds :api_secret)}]}))
+                              {:name "api_key" :content (:api_key faceplus-creds)}
+                              {:name "api_secret" :content (:api_secret faceplus-creds)}]}))
     (normalize [_ result]
       (map (fn [r]
              {:age    (age->sym (get-in r [:attribute :age :value]))
