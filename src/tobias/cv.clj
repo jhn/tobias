@@ -1,7 +1,7 @@
 (ns tobias.cv
   (:require [clj-http.client :as http]
             [clojure.data.json :as json]
-            [clojure.core.async :refer [chan alts!! thread >!!]]
+            [clojure.core.async :as async]
             [tobias.util :refer [timed load-config]])
   (:refer-clojure :exclude [name]))
 
@@ -85,16 +85,23 @@
 (defn get-features
   "Returns a normalized response for the features in the image"
   ([image]
-   (get-features image [sightcorp microsoft faceplus]))
+   (get-features image [sightcorp microsoft]))
 
   ([image providers]
-   (->> providers
-        (map (fn [provider]
-               (thread
-                 (timed (name provider)
-                        (->> image
-                             (features provider)
-                             (extract-json-body)
-                             (normalize provider))))))
-        (alts!!)     ; get the first result / chan pair
-        (first))))   ; only return the result
+   (let [merged-channels (->> providers
+                              (map (fn [provider]
+                                     (async/thread
+                                       (timed (name provider)
+                                              (->> image
+                                                   (features provider)
+                                                   (extract-json-body)
+                                                   (normalize provider))))))
+                              (async/merge))
+         one (first (async/<!! merged-channels))
+         two (first (async/<!! merged-channels))
+         combined-results (apply merge
+                                 (if (contains? one :clothing) ; sightcorp less accurate
+                                   [one two]
+                                   [two one]))]
+     (prn combined-results)
+     (conj [] combined-results))))
