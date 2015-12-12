@@ -1,7 +1,4 @@
 {:microsoft {:key        "your-microsoft-key"}
 
- :faceplus  {:api_key    "your-faceplus-plus-key"
-             :api_secret "your-faceplus-plus-secret"}
-
  :sightcorp {:app_key    "your-sightcorp-key"
              :client_id  "your-sightcorp-client-id"}}

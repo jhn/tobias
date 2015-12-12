@@ -9,8 +9,6 @@
 
 (def microsoft-creds (:microsoft config))
 
-(def faceplus-creds (:faceplus config))
-
 (def sightcorp-creds (:sightcorp config))
 
 (defn- age->sym [n]
@@ -67,20 +65,6 @@
               :ethnicity (str->kw  (get-in r [:ethnicity :value]))
               :clothing  (get r :clothingcolors [])})
            (:persons result)))))
-
-(def faceplus
-  (reify CvProvider
-    (name [_] "Faceplus")
-    (features [_ image]
-      (http/post "http://apius.faceplusplus.com/detection/detect"
-                 {:multipart [{:name "img" :content image}
-                              {:name "api_key" :content (:api_key faceplus-creds)}
-                              {:name "api_secret" :content (:api_secret faceplus-creds)}]}))
-    (normalize [_ result]
-      (map (fn [r]
-             {:age    (age->sym (get-in r [:attribute :age :value]))
-              :gender (str->kw  (get-in r [:attribute :gender :value]))})
-           (:face result)))))
 
 (defn get-features
   "Returns a normalized response for the features in the image"
