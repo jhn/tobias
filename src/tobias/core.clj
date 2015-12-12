@@ -4,11 +4,10 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
-            [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [response resource-response content-type]]
             [ring.adapter.jetty :refer [run-jetty]]
             [tobias.cv :refer [get-features]]
-            [tobias.util :refer [timed load-config map-values]])
+            [tobias.util :refer [load-config map-values]])
   (:gen-class))
 
 (defn- hex-stream []
@@ -79,9 +78,7 @@
       (wrap-defaults api-defaults)
       (wrap-json-body {:keywords? true})
       (wrap-json-response)
-      (wrap-multipart-params)
-      (wrap-cors :access-control-allow-origin [#".*"]
-                 :access-control-allow-methods [:post])))
+      (wrap-multipart-params)))
 
 (defn -main [& args]
   (run-jetty app {:port 3000}))
