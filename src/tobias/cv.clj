@@ -68,19 +68,19 @@
   "Returns a normalized response for the features in the image"
   ([image]
    (get-features image [sightcorp microsoft]))
-
   ([image providers]
-   (let [merged-channels (->> providers
-                              (map (fn [provider]
-                                     (async/thread
-                                       (timed (name provider)
-                                              (->> image
-                                                   (features provider)
-                                                   (extract-json-body)
-                                                   (normalize provider))))))
-                              (async/merge))
-         one (first (async/<!! merged-channels))
-         two (first (async/<!! merged-channels))
-         combined-results (merge one two)]
-     (prn combined-results)
-     (conj [] combined-results))))
+   (let [timed-features (fn [provider]
+                          (async/thread
+                            (timed (name provider)
+                                   (->> image
+                                        (features provider)
+                                        (extract-json-body)
+                                        (normalize provider)))))]
+     (->> providers
+          (map timed-features)      ; do the call
+          (async/merge)             ; merge into single channel
+          (vector)                  ; put channel into vector for mapping
+          (async/map first)         ; only get the first person from each result if multiple
+          (async/reduce merge {})   ; merge results
+          (async/into [])           ; conj results into vector
+          (async/<!!)))))
