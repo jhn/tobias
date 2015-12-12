@@ -60,9 +60,7 @@
                               {:name "client_id" :content (:client_id sightcorp-creds)}]}))
     (normalize [_ result]
       (map (fn [r]
-             {:age       (age->sym (get-in r [:age :value]))
-              :gender    (str->kw  (get-in r [:gender :value]))
-              :ethnicity (str->kw  (get-in r [:ethnicity :value]))
+             {:ethnicity (str->kw  (get-in r [:ethnicity :value]))
               :clothing  (get r :clothingcolors [])})
            (:persons result)))))
 
@@ -83,9 +81,6 @@
                               (async/merge))
          one (first (async/<!! merged-channels))
          two (first (async/<!! merged-channels))
-         combined-results (apply merge
-                                 (if (contains? one :clothing) ; sightcorp less accurate
-                                   [one two]
-                                   [two one]))]
+         combined-results (merge one two)]
      (prn combined-results)
      (conj [] combined-results))))
