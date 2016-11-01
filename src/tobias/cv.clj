@@ -27,10 +27,9 @@
   (json/read-str (:body body) :key-fn keyword))
 
 (defprotocol CvProvider
-  "Encapsulates a CV provider"
-  (name      [this]        "The name for this provider")
-  (features  [this image]  "Gets the features for an image")
-  (normalize [this result] "Normalizes a result"))
+  (name      [this])
+  (features  [this image])
+  (normalize [this result]))
 
 (def microsoft
   (reify CvProvider
