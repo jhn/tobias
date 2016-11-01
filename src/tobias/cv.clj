@@ -36,18 +36,16 @@
   (reify CvProvider
     (name [_] "Microsoft")
     (features [_ image]
-      (http/post (str "https://api.projectoxford.ai/face/v0/detections"
-                      "?analyzesFaceLandmarks=false"
-                      "&analyzesAge=true"
-                      "&analyzesGender=true"
-                      "&analyzesHeadPose=false")
+      (http/post (str "https://api.projectoxford.ai/face/v1.0/detect"
+                      "?returnFaceId=false"
+                      "&returnFaceAttributes=age,gender")
                  {:headers {"Content-Type" "application/octet-stream"
                             "Ocp-Apim-Subscription-Key" (:key microsoft-creds)}
                   :body image}))
     (normalize [_ result]
       (map (fn [r]
-             {:age    (age->sym (get-in r [:attributes :age]))
-              :gender (str->kw  (get-in r [:attributes :gender]))})
+             {:age    (age->sym (get-in r [:faceAttributes :age]))
+              :gender (str->kw  (get-in r [:faceAttributes :gender]))})
            result))))
 
 (def sightcorp
